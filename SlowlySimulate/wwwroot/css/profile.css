@@ -1,0 +1,98 @@
+﻿
+.text-light {
+    color: #D4D4D4 !important;
+}
+
+.text-calm {
+    color: darkgoldenrod;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+.avatar-wrapper-2 img {
+    height: 180px;
+    width: 180px;
+}
+
+.avatar-border {
+    border-color: rgba(0,0,0,0.05);
+    border-width: 1px;
+    border-style: solid;
+}
+
+table .icon-td {
+    width: 24px;
+    padding-right: 4px;
+    padding-left: 0px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table.profile-list {
+    margin: 1rem auto;
+}
+
+.mt-n2, .my-n2 {
+    margin-top: -0.5rem !important;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.modal-dialog.profile .profile-wrapper .about {
+    position: relative;
+    line-height: 1.4em;
+    max-height: 5.6em;
+    overflow: hidden;
+}
+
+.modal-dialog.profile .profile-wrapper .profile-container {
+    padding: 1rem;
+}
+
+.modal-dialog.profile .modal-body.read-only {
+    height: calc(90vh - 200px);
+}
+
+.modal-dialog.profile .profile-wrapper .badge-tag {
+    margin-bottom: 4px;
+}
+
+
+.badge-tag.badge-active {
+    color: #0b0c0d;
+    background-color: #ffc300;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out,background-color 0.15s ease-in-out,border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out;
+}
+
+.badge-pill {
+    padding-right: 0.6em;
+    padding-left: 0.6em;
+    border-radius: 10rem;
+}
+
+.badge-tag {
+    color: #f5f5f5;
+    margin-right: 4px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border: 1px solid #ffc300;
+    margin-bottom: 6px;
+    font-weight: normal;
+}

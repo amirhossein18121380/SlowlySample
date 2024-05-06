@@ -1,0 +1,282 @@
+﻿@model SlowlySimulate.Api.ViewModels.Profile.GetUserMatchingPreferencesViewModel
+
+@{
+    ViewBag.Title = "MatchingPreferences";
+}
+
+
+<style>
+    .mr-2, .mx-2 {
+        margin-right: 0.5rem !important;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .custom-control {
+         position: relative;
+         display: block;
+         min-height: 1.5rem;
+         padding-left: 1.5rem;
+     }
+    .custom-control-label {
+        position: relative;
+        margin-bottom: 0;
+        vertical-align: top;
+    }
+    .text-right {
+         text-align: right !important;
+     }
+</style>
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-9 p-3">
+            <!-- Reusable Matching Preferences Card -->
+            <div class="card shadow-sm my-2">
+                <div class="card-header d-flex align-items-center">
+                    <div class="flex-grow-1 strong">Matching Preferences</div>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row mt-2">
+                        <label class="col-4">Accepting New Friends</label>
+                        <div class="col-8">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="add_by_id" checked>
+                                <label class="custom-control-label mb-3" for="add_by_id">
+                                    <strong>Slowly ID</strong><br>
+                                    <small>Allow others to add me by ID</small>
+                                </label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="automatch" checked>
+                                <label class="custom-control-label mb-3" for="automatch">
+                                    <strong>Auto-match</strong><br>
+                                    <small>Connect with others through Auto-match</small>
+                                </label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="new_request" checked>
+                                <label class="custom-control-label mb-3" for="new_request">
+                                    <strong>Profile Suggestions</strong><br>
+                                    <small>Get recommended to potential pen pals</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group row align-items-center">
+                        <label class="col-4">Target Gender</label>
+                        <div class="col-8">
+                            <div class="btn-group btn-block" role="group" dir="ltr" id="genderButtons">
+                                <button type="button" class="btn btn-light text-left">
+                                    <input type="checkbox" id="maleCheckbox"> <i class="text-primary mr-2"></i>Male
+                                </button>
+                                <button type="button" class="btn btn-light text-left">
+                                    <input type="checkbox" id="femaleCheckbox"> <i class="text-primary mr-2"></i>Female
+                                </button>
+                                <button type="button" class="btn btn-light text-left">
+                                    <input type="checkbox" id="nonBinaryCheckbox"> <i class="text-primary mr-2"></i>Non-binary
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group row mb-3 align-items-start">
+                        <label class="col-4">Target Age Range</label>
+                        <div class="col-8">
+                            <div class="custom-control custom-checkbox mb-2">
+                                <input type="checkbox" class="custom-control-input" id="enable-age">
+                                <label class="custom-control-label" for="enable-age">Enable Age Filter</label>
+                            </div>
+                          @*   <div class="input-group" id="age-part">
+                                <select class="custom-select" id="age-from"></select>
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="icon-more-horizontal"></i></span>
+                                </div>
+                                <select class="custom-select input-group-append" id="age-to"></select>
+                            </div> *@
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <button class="btn btn-primary btn-block" id="saveButton">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // Handle checkbox state changes
+        $('.custom-control-input').change(function () {
+            var checkboxId = $(this).attr('id');
+            var isChecked = $(this).prop('checked');
+            console.log('Checkbox ' + checkboxId + ' is ' + (isChecked ? 'checked' : 'unchecked'));
+        });
+        
+
+        function populateAgeDropdowns() {
+            const ageFromDropdown = document.getElementById('age-from');
+            const ageToDropdown = document.getElementById('age-to');
+
+            // Clear existing options
+            ageFromDropdown.innerHTML = '';
+            ageToDropdown.innerHTML = '';
+
+            // Add options dynamically
+            for (let age = 20; age <= 60; age++) {
+                const option = document.createElement('option');
+                option.value = age;
+                option.textContent = age;
+                ageFromDropdown.appendChild(option.cloneNode(true));
+                ageToDropdown.appendChild(option);
+            }
+
+            // Add 65+ option to age-to dropdown
+            const ageToOption = document.createElement('option');
+            ageToOption.value = '65+';
+            ageToOption.textContent = '65+';
+            ageToDropdown.appendChild(ageToOption);
+        }
+    
+        class GenderCheckboxGroup {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.container.addEventListener('change', this.handleCheckboxChange.bind(this));
+            }
+
+            handleCheckboxChange(event) {
+                if (event.target.type === 'checkbox') {
+                    const gender = event.target.id.replace('Checkbox', '');
+                    console.log(`${gender} checkbox checked:`, event.target.checked);
+                    // You can perform additional actions based on the checkbox state here
+                }
+            }
+        }
+        const genderCheckboxGroup = new GenderCheckboxGroup('genderButtons');
+
+    
+        
+        function addAgeHTML() {
+            var ageHtml = `
+          <div class="input-group" id="age-part">
+            <select class="custom-select" id="age-from"></select>
+            <div class="input-group-append">
+              <span class="input-group-text"><i class="icon-more-horizontal"></i></span>
+            </div>
+            <select class="custom-select input-group-append" id="age-to"></select>
+          </div>
+        `;
+
+            
+            // Append the age HTML after the checkbox label
+            document.getElementById('enable-age').parentElement.insertAdjacentHTML('afterend', ageHtml);
+            populateAgeDropdowns();
+        }
+        // Function to remove age-related HTML
+        function removeAgeHTML() {
+            var agePartElement = document.getElementById('age-part');
+            if (agePartElement) {
+                agePartElement.remove();
+            }
+        }
+
+        // Event listener for checkbox change
+        document.getElementById('enable-age').addEventListener('change', function () {
+            var enableAge = this.checked;
+
+            if (enableAge) {
+                addAgeHTML();
+            } else {
+                removeAgeHTML();
+            }
+        });
+        
+
+        function loadUserMatchingPreferences() {
+            fetch('/Profile/GetUserMatchingPreferences', {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('add_by_id').checked = data.allowAddMeById;
+                    document.getElementById('automatch').checked = data.autoMatch;
+                    document.getElementById('new_request').checked = data.profileSuggestions;
+                    document.getElementById('enable-age').checked = data.enableAgeFilter;
+                    document.getElementById('maleCheckbox').checked = data.beMale;
+                    document.getElementById('femaleCheckbox').checked = data.beFemale;
+                    document.getElementById('nonBinaryCheckbox').checked = data.beNonBinary;
+                    console.log(data.enableAgeFilter);
+                    if (data.enableAgeFilter) {
+                        
+                        addAgeHTML();
+                        document.getElementById('age-from').value = data.ageFrom || '20'; // Default to 20 if null
+                        document.getElementById('age-to').value = data.ageTo || '65+'; // Default to 65+ if null
+                    }
+                })
+                .then(() => {
+                    // After updating the form, trigger any necessary events or functions
+                })
+                .catch(error => {
+                    console.error('Error loading user matching preferences:', error);
+                });
+        }
+
+        
+        loadUserMatchingPreferences();
+  
+        
+        
+        
+        document.getElementById('saveButton').addEventListener('click', function () {
+            saveMatchingPreferences();
+        });
+        function saveMatchingPreferences() {
+            // Gather data from form elements
+            const matchingPreferencesData = {
+                allowAddMeById: document.getElementById('add_by_id').checked,
+                AutoMatch: document.getElementById('automatch').checked,
+                ProfileSuggestions: document.getElementById('new_request').checked,
+                EnableAgeFilter: document.getElementById('enable-age').checked,
+                BeMale: document.getElementById('maleCheckbox').checked,
+                BeFemale: document.getElementById('femaleCheckbox').checked,
+                BeNonBinary: document.getElementById('nonBinaryCheckbox').checked,
+                AgeFrom: null,
+                AgeTo: null,
+            };
+            // Validate and set AgeFrom and AgeTo only if EnableAgeFilter is true
+            if (matchingPreferencesData.EnableAgeFilter) {
+                const ageFromElement = document.getElementById('age-from');
+                const ageToElement = document.getElementById('age-to');
+
+                // Check if elements are not null before accessing their values
+                if (ageFromElement && ageToElement) {
+                    matchingPreferencesData.AgeFrom = parseInt(ageFromElement.value) || null;
+                    matchingPreferencesData.AgeTo = parseInt(ageToElement.value) || null;
+                }
+            }
+            console.log(matchingPreferencesData)
+            // Make an AJAX request to the server
+            fetch('/Profile/MatchingPreferences', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(matchingPreferencesData),
+            })
+                .then(response => response.json())
+                .then(response => {
+                    if (response.statusCode === 200) {
+                        showSuccessAlert(response.message, { autoClose: true, timeout: 3000 });
+                    }
+                    
+                })
+                .catch(error => {
+                    showErrorAlert(error, { autoClose: true, timeout: 3000 });
+                });
+        }
+
+    });
+    
+
+</script>

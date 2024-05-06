@@ -1,0 +1,314 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SlowlySimulate.Domain.Constants
+@model List<SlowlySimulate.Api.ViewModels.Profile.LanguagesOfUser>
+
+<div class="container-fluid">
+    <h2 class="mt-3 mb-4">Languages</h2>
+
+    <form id="languagesForm">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table" id="languageTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Language</th>
+                                <th scope="col">Level</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var language in Model)
+                            {
+                                <tr data-language-id="@language.LanguageId">
+                                    <td>@language.LanguageName</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            @foreach (LanguageLevel level in Enum.GetValues(typeof(LanguageLevel)))
+                                            {
+                                                <div style="font-size: 24px; margin-right: 5px; color: @(language.LanguageLevel >= level ? "yellow" : "lightgrey");">
+                                                    <i class="bi bi-circle"></i>
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-secondary" onclick="openEditLanguageModal('@language.LanguageId', '@language.LanguageLevel')">Edit</button>
+                                        <button type="button" class="btn btn-danger" onclick="openDeleteLanguageModal('@language.LanguageId')">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLanguageModal">Add Language</button>
+            </div>
+        </div>
+    </form>
+
+
+
+    <!-- Edit Language Modal -->
+    <div class="modal" id="editLanguageModal" tabindex="-1" aria-labelledby="editLanguageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editLanguageModalLabel">Edit Language</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editLevelDropdown" class="form-label">Language Level:</label>
+                        <select class="form-select" id="editLevelDropdown">
+                            @foreach (LanguageLevel level in Enum.GetValues(typeof(LanguageLevel)))
+                            {
+                                <option value="@((int)level)">@level</option>
+                            }
+                        </select>
+                    </div>
+                    <input type="hidden" id="editLanguageId" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="updateLanguage()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Language Modal -->
+    <div class="modal" id="addLanguageModal" tabindex="-1" aria-labelledby="addLanguageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addLanguageModalLabel">Add Language</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="languageDropdown" class="form-label">Language:</label>
+                        <select class="form-select" id="languageDropdown" name="LanguageId">
+                            <!-- Call the JavaScript function to get all languages -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="levelDropdown" class="form-label">Language Level:</label>
+                        <select class="form-select" id="levelDropdown" name="LanguageLevel">
+                            @foreach (LanguageLevel level in Enum.GetValues(typeof(LanguageLevel)))
+                            {
+                                <option value="@((int)level)">@level</option>
+                            }
+                        </select>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addLanguage()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Language Modal -->
+    <div class="modal" id="deleteLanguageModal" tabindex="-1" aria-labelledby="deleteLanguageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteLanguageModalLabel">Delete Language</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this language?</p>
+                </div>
+                <input type="hidden" id="deleteLanguageId" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteLanguage()">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        getAllLanguages();
+
+        window.addLanguage = function () {
+            var languageId = $('#languageDropdown').val();
+            var languageLevel = $('#levelDropdown').val();
+
+            $.ajax({
+                url: '@Url.Action("AddUserLanguage", "Profile")',
+                type: 'POST',
+                data: {
+                    languageId: languageId,
+                    languageLevel: languageLevel
+                },
+                success: function (response) {
+                    if (response.statusCode === 200) {
+
+                        showSuccessAlert(response.message, { autoClose: true, timeout: 3000 });
+                        
+                        var newLanguage = {
+                            LanguageId: response.result.languageId,
+                            LanguageName: response.result.languageName,
+                            LanguageLevelInt: parseInt(languageLevel)
+                        };
+                        
+                        addLanguageRow(newLanguage);
+                        $('#addLanguageModal').modal('hide');
+
+                    } else {
+                        showErrorAlert(response.message, { autoClose: true, timeout: 3000 });
+                    }
+                },
+                error: function (xhr) {
+                    showErrorAlert(xhr.responseJSON, { autoClose: true, timeout: 3000 });
+                }
+            });
+        }
+
+        window.openEditLanguageModal = function (languageId, currentLevel) {
+            // Set the selected language level in the dropdown
+            $("#editLanguageModal #editLevelDropdown").val(currentLevel);
+
+            // Set data attributes to identify the language being edited
+            $("#editLanguageModal #editLanguageId").val(languageId);
+            $("#editLanguageModal").modal("show");
+        }
+
+        window.updateLanguage = function () {
+            var languageId = $("#editLanguageId").val();
+            var newLevel = $("#editLevelDropdown").val();
+            
+            $.ajax({
+                url: '@Url.Action("UpdateLanguage", "Profile")',
+                type: 'POST',
+                data: { languageId: languageId, level: newLevel },
+                success: function (response) {
+                    
+                    if (response.statusCode === 200) {
+                        showSuccessAlert(response.message, { autoClose: true, timeout: 3000 });
+                        
+                        var updatedLanguage = {
+                            LanguageName: response.result.languageName,
+                            LanguageLevelInt: parseInt(newLevel)
+                        };
+                        updateLanguageRow(response.result.userLanguage.languageId, updatedLanguage);
+                        
+                    } else {
+                        showErrorAlert(response.message, { autoClose: true, timeout: 3000 });
+                    }
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    showErrorAlert(errorThrown, { autoClose: true, timeout: 3000 });
+                    console.error("Error updating language:", textStatus, errorThrown);
+                }
+            });
+            
+            $("#editLanguageModal").modal("hide");
+        }
+
+        window.openDeleteLanguageModal = function (languageId) {
+            $('#deleteLanguageId').val(languageId);
+            $("#deleteLanguageModal").modal("show");
+        }
+
+        window.deleteLanguage = function deleteLanguage() {
+            var languageId = $("#deleteLanguageId").val();
+
+            $.ajax({
+                url: '@Url.Action("DeleteLanguage", "Profile")',
+                type: 'POST',
+                data: { languageId: languageId },
+                success: function (response) {
+                   
+                    if (response.statusCode === 200) {
+                        $('#deleteLanguageModal').modal('hide');
+                        $('#languageTable tbody tr[data-language-id="' + languageId + '"]').remove();
+                        showSuccessAlert(response.message, { autoClose: true, timeout: 3000 });
+                    }
+                },
+                error: function (xhr) {
+                    showErrorAlert(xhr.responseJSON, { autoClose: true, timeout: 3000 });
+                }
+            });
+        }
+        
+        function getAllLanguages() {
+            $.ajax({
+                url: '@Url.Action("GetAllLanguages", "Profile")',
+                type: 'GET',
+                success: function (languages) {
+
+                    if (languages.length === 0) {
+                        showErrorAlert("Languages Not Fetched.", { autoClose: true, timeout: 3000 });
+                        return;
+                    }
+
+                    var languageDropdown = $('#languageDropdown');
+                    languageDropdown.empty();
+                    $.each(languages, function (index, language) {
+                        languageDropdown.append($('<option></option>').val(language.languageId).html(language.languageName));
+                    });
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+
+        function updateLanguageRow(languageId, updatedLanguage) {
+            // Find the row in the table with the specified languageId
+            var targetRow = $('#languageTable tbody tr').filter(function () {
+                return $(this).find('td:first').text() === updatedLanguage.LanguageName;
+            });
+
+            // Update the language level circles in the row
+            var levelDiv = targetRow.find('td:eq(1) .d-flex');
+            levelDiv.empty();
+            for (var i = 1; i <= 6; i++) {
+                var circleColor = (i <= updatedLanguage.LanguageLevelInt) ? 'yellow' : 'lightgrey';
+                levelDiv.append($('<div style="font-size: 24px; margin-right: 5px; color: ' + circleColor + ';">').html('<i class="bi bi-circle"></i>'));
+            }
+        }
+
+        function addLanguageRow(newLanguage) {
+            // Find the table body
+            var tableBody = $('#languageTable tbody');
+
+            // Create a new row with the language information
+            var newRow = $('<tr data-language-id="' + newLanguage.LanguageId + '">');
+            newRow.append($('<td>').text(newLanguage.LanguageName));
+
+            // Create a div with circles based on LanguageLevelInt
+            var levelDiv = $('<div class="d-flex">');
+            for (var i = 1; i <= 6; i++) {
+                var circleColor = (i <= newLanguage.LanguageLevelInt) ? 'yellow' : 'lightgrey';
+                levelDiv.append($('<div style="font-size: 24px; margin-right: 5px; color: ' + circleColor + ';">').html('<i class="bi bi-circle"></i>'));
+            }
+            newRow.append($('<td>').append(levelDiv));
+
+            // Create a new cell for the "Edit" and "Delete" buttons
+            var actionButtonsCell = $('<td>');
+            var editButton = $('<button type="button" class="btn btn-secondary" onclick="openEditLanguageModal(\'' + newLanguage.LanguageId + '\', \'' + newLanguage.LanguageLevelInt + '\')">Edit</button>');
+            var deleteButton = $('<button type="button" class="btn btn-danger" onclick="openDeleteLanguageModal(\'' + newLanguage.LanguageId + '\')">Delete</button>');
+            actionButtonsCell.append(editButton).append(deleteButton);
+            newRow.append(actionButtonsCell);
+
+            // Append the new row to the table
+            tableBody.append(newRow);
+        }
+    });
+</script>

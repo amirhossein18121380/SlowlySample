@@ -1,0 +1,94 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model SlowlySimulate.Api.ViewModels.Profile.ExcludeTopicViewModel
+<marquee behavior="scroll" direction="left">
+    <h1 style="color: red">
+        under construction
+    </h1>
+</marquee>
+
+<div class="container">
+    <div class="header">
+        <h2>ExcludedTopics</h2>
+    </div>
+
+    @using (Html.BeginForm("ExcludedTopics", "Profile", FormMethod.Post, new { id = "excludeTopicForm" }))
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-container table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="color: #007bff">Topics</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var topic in Model.FixedTopics)
+                            {
+                                <tr>
+                                    <td style="@(Model.UserExcludedTopics.Any(uet => uet.Id == topic.Id) ? "text-decoration: line-through; color: red;" : "")">@topic.Name</td>
+                                    <td>
+                                        <div class="form-check">
+                                            @if (Model.UserTopics.Any(ut => ut.Id == topic.Id))
+                                            {
+                                                <input type="checkbox" class="form-check-input" name="topicIds" value="@topic.Id" disabled />
+                                            }
+                                            else
+                                            {
+                                                @if (Model.UserExcludedTopics.Any(ut => ut.Id == topic.Id))
+                                                {
+                                                    <input type="checkbox" class="form-check-input" name="topicIds" value="@topic.Id" checked="checked" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" class="form-check-input" name="topicIds" value="@topic.Id" />
+                                                }
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+      
+        $('#excludeTopicForm').submit(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: this.action,
+                type: this.method,
+                data: $(this).serialize(),
+                success: function (response) {
+
+                    if (response.statusCode === 200) {
+                        showSuccessAlert(response.message, { autoClose: true, timeout: 3000 });
+
+                    } else {
+                        showErrorAlert(response.message, { autoClose: true, timeout: 3000 });
+                    }
+
+                },
+                error: function (xhr) {
+                    showErrorAlert(xhr.responseJSON, { autoClose: true, timeout: 3000 });
+                }
+            });
+        });
+    });
+</script>

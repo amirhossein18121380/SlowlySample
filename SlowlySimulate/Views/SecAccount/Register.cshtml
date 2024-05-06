@@ -1,0 +1,102 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model SlowlySimulate.Api.ViewModels.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"].</h1>
+
+<form asp-controller="SecAccount" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
+    <h4>Create a new account.</h4>
+    <hr />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Email" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="UserName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="UserName" class="form-control" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Password" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="PasswordConfirm" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="PasswordConfirm" class="form-control" />
+            <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
+        </div>
+    </div>
+    
+      <!-- New fields for profile information -->
+    <div class="form-group">
+        <label asp-for="DisplayName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="DisplayName" class="form-control" />
+            <span asp-validation-for="DisplayName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="BirthDate" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="BirthDate" type="date" class="form-control" />
+            <span asp-validation-for="BirthDate" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="GenderType" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <select asp-for="GenderType" asp-items="Html.GetEnumSelectList<GenderType>()" class="form-control"></select>
+            <span asp-validation-for="GenderType" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Country" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Country" class="form-control" />
+            <span asp-validation-for="Country" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="LetterLength" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <select asp-for="LetterLength" asp-items="Html.GetEnumSelectList<LetterLength>()" class="form-control"></select>
+            <span asp-validation-for="LetterLength" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="ReplyTime" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <select asp-for="ReplyTime" asp-items="Html.GetEnumSelectList<ReplyTime>()" class="form-control"></select>
+            <span asp-validation-for="ReplyTime" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="AboutMe" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <textarea asp-for="AboutMe" class="form-control" rows="3" placeholder="Describe Yourself"></textarea>
+            <span asp-validation-for="AboutMe" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-default">Register</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

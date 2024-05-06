@@ -1,0 +1,55 @@
+﻿@using SlowlySimulate.Domain.Models
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <form asp-controller="SecAccount" asp-action="LogOff" method="post" id="logoutForm" class="navbar-right">
+        <ul class="nav navbar-nav navbar-right">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <div class="user-icon">
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <!-- Dropdown items -->
+                    <a class="dropdown-item" asp-controller="Profile" asp-action="Profile">
+                        <i class="bi bi-person"></i> Profile
+                    </a>
+                    <a class="dropdown-item" asp-controller="Manage" asp-action="">
+                        <i class="bi bi-file-earmark-text"></i> My Stamps
+                    </a>
+                    <a class="dropdown-item" asp-controller="Manage" asp-action="">
+                        <i class="bi bi-folder"></i> Stamp Collections
+                    </a>
+                    <a class="dropdown-item" asp-controller="Manage" asp-action="">
+                        <i class="bi bi-shop"></i> Stamp Store
+                    </a>
+                    <a class="dropdown-item" asp-controller="Manage" asp-action="">
+                        <i class="bi bi-currency-dollar"></i> Purchase Coins
+                    </a>
+                    <a class="dropdown-item" asp-controller="Manage" asp-action="">
+                        <i class="bi bi-info-circle"></i> About Slowly
+                    </a>
+                    <a class="dropdown-item" asp-controller="Manage" asp-action="">
+                        <i class="bi bi-gear"></i> Settings
+                    </a>
+                    <button type="submit" class="dropdown-item">
+                        <i class="bi bi-box-arrow-right"></i> Log off
+                    </button>
+                </div>
+            </li>
+        </ul>
+    </form>
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li><a class="nav-link" asp-controller="SecAccount" asp-action="Register"><i class="bi bi-person-plus"></i> Register</a></li>
+        <li><a class="nav-link" asp-controller="SecAccount" asp-action="Login"><i class="bi bi-box-arrow-in-right"></i> Log in</a></li>
+    </ul>
+}
