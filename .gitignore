@@ -1,14 +1,6 @@
 
-# Ignore node_modules folder
-node_modules
-
-# Ignore all text files
-*.txt
-
-# Ignore files related to API keys
-.env
-
-
+# Ignore everything in any directory named "temp"
+temp/
 
 # Ignore system-specific files
 .DS_Store
@@ -33,3 +25,9 @@ __pycache__
 # Ignore temporary files
 *.tmp
 *.cache
+
+
+bin/
+log/
+obj/
+.vs/
