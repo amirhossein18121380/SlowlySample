@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SlowlySimulate")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca8e82624dedc78b9f83b462bbfb149398170b4c")]
 [assembly: System.Reflection.AssemblyProductAttribute("SlowlySimulate")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SlowlySimulate")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

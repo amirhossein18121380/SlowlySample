@@ -1,3 +1,4 @@
+using Hangfire;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using SlowlySimulate.Api.Manager;
 using SlowlySimulate.Api.Middleware;
 using SlowlySimulate.Api.Models;
 using SlowlySimulate.Api.Providers;
+using SlowlySimulate.Api.Services;
 using SlowlySimulate.Application;
 using SlowlySimulate.Domain.Constants;
 using SlowlySimulate.Domain.Identity;
@@ -30,6 +32,13 @@ var configuration = builder.Configuration;
 
 
 
+services.AddHangfire(x =>
+{
+    x.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"));
+});
+services.AddHangfireServer();
+services.AddScoped<IBirthdayNotificationService, BirthdayNotificationService>();
+services.AddSingleton<BirthdayJobScheduler>();
 
 services.AddSignalR();
 services.AddDateTimeProvider();
@@ -129,6 +138,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseHangfireDashboard();
+
+var job = app.Services.GetRequiredService<BirthdayJobScheduler>();
+job.ScheduleBirthdayCheckJob();
+
 
 app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
@@ -139,6 +153,7 @@ app.UseUnauthorizedRedirect();
 app.UseAuthorization();
 app.Configure();
 app.MapHub<HubSample>("/chatHub");
+app.MapHub<BirthdayHub>("/birthdayHub");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "n2Lng9uWxzLqxAhy9PXZSnhVNjQtkKRq+wfYVA8puOq2ggT/A5W/1Rd26X0xUhn1ZBMCtkKqovGcaYyOmsklXQ==",
+  "dgSpecHash": "+oRdmOS4dEcx8nt1LHo+tlkQbstiOy+lF4LuPnaSeFc2zTaTA5yD7tcalt2TnrcZLpMGO/50iDaegOtJkqF2qw==",
   "success": true,
   "projectFilePath": "D:\\new\\MySamples\\SlowlySimulate\\SlowlySimulate\\SlowlySimulate.csproj",
   "expectedPackageFiles": [
@@ -16,6 +16,11 @@
     "C:\\Users\\Titan\\.nuget\\packages\\easycaching.serialization.messagepack\\1.9.2\\easycaching.serialization.messagepack.1.9.2.nupkg.sha512",
     "C:\\Users\\Titan\\.nuget\\packages\\entityframeworkcore.sqlserver.simplebulks\\6.9.0\\entityframeworkcore.sqlserver.simplebulks.6.9.0.nupkg.sha512",
     "C:\\Users\\Titan\\.nuget\\packages\\fluentvalidation\\11.9.0\\fluentvalidation.11.9.0.nupkg.sha512",
+    "C:\\Users\\Titan\\.nuget\\packages\\hangfire\\1.8.12\\hangfire.1.8.12.nupkg.sha512",
+    "C:\\Users\\Titan\\.nuget\\packages\\hangfire.aspnetcore\\1.8.12\\hangfire.aspnetcore.1.8.12.nupkg.sha512",
+    "C:\\Users\\Titan\\.nuget\\packages\\hangfire.core\\1.8.12\\hangfire.core.1.8.12.nupkg.sha512",
+    "C:\\Users\\Titan\\.nuget\\packages\\hangfire.netcore\\1.8.12\\hangfire.netcore.1.8.12.nupkg.sha512",
+    "C:\\Users\\Titan\\.nuget\\packages\\hangfire.sqlserver\\1.8.12\\hangfire.sqlserver.1.8.12.nupkg.sha512",
     "C:\\Users\\Titan\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\Titan\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Titan\\.nuget\\packages\\humanizer.core.af\\2.14.1\\humanizer.core.af.2.14.1.nupkg.sha512",

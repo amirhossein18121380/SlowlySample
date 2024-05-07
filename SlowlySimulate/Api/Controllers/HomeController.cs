@@ -20,5 +20,7 @@ namespace SlowlySimulate.Api.Controllers
         {
             return View();
         }
+
+
     }
 }

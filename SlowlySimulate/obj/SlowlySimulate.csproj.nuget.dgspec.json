@@ -68,6 +68,14 @@
               "target": "Package",
               "version": "[11.9.0, )"
             },
+            "Hangfire": {
+              "target": "Package",
+              "version": "[1.8.12, )"
+            },
+            "Hangfire.AspNetCore": {
+              "target": "Package",
+              "version": "[1.8.12, )"
+            },
             "IdentityModel": {
               "target": "Package",
               "version": "[6.2.0, )"
