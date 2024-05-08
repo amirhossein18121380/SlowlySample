@@ -15,14 +15,14 @@ namespace SlowlySimulate.Application.Roles.Service;
 
 public class RoleService : IRoleService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly UserManager<User> _userManager;
+    private readonly RoleManager<Role> _roleManager;
     private readonly ILogger<RoleService> _logger;
     private readonly EntityPermissions _entityPermissions;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public RoleService(UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager,
+    public RoleService(UserManager<User> userManager,
+        RoleManager<Role> roleManager,
         ILogger<RoleService> logger,
         EntityPermissions entityPermissions,
         IDateTimeProvider dateTimeProvider
@@ -129,7 +129,7 @@ public class RoleService : IRoleService
     {
         if (_roleManager.Roles.Any(r => r.Name == roleDto.Name))
             return new ApiResponse(Status400BadRequest, $"Role {roleDto.Name} already exists");
-        var result = await _roleManager.CreateAsync(new ApplicationRole(roleDto.Name));
+        var result = await _roleManager.CreateAsync(new Role(roleDto.Name));
 
         if (!result.Succeeded)
         {

@@ -14,14 +14,14 @@ namespace SlowlySimulate.Persistence
     public class DatabaseInitializer : IDatabaseInitializer
     {
         private readonly SlowlyDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly EntityPermissions _entityPermissions;
         private readonly ILogger _logger;
         public DatabaseInitializer(
             SlowlyDbContext context,
-            UserManager<ApplicationUser> userManager,
-            RoleManager<ApplicationRole> roleManager,
+            UserManager<User> userManager,
+            RoleManager<Role> roleManager,
             EntityPermissions entityPermissions,
             ILogger<DatabaseInitializer> logger)
         {
@@ -71,7 +71,7 @@ namespace SlowlySimulate.Persistence
                 if (invalidClaims.Any())
                     throw new Exception("The following claim types are invalid: " + string.Join(", ", invalidClaims));
 
-                ApplicationRole applicationRole = new(roleName);
+                Role applicationRole = new(roleName);
 
                 var result = await _roleManager.CreateAsync(applicationRole);
 
@@ -123,13 +123,13 @@ namespace SlowlySimulate.Persistence
         }
 
 
-        private async Task<ApplicationUser> CreateUser(string userName, string password, string email, string phoneNumber, string[] roles = null)
+        private async Task<User> CreateUser(string userName, string password, string email, string phoneNumber, string[] roles = null)
         {
             var applicationUser = _userManager.FindByNameAsync(userName).Result;
 
             if (applicationUser == null)
             {
-                applicationUser = new ApplicationUser
+                applicationUser = new User
                 {
                     UserName = userName,
                     Email = email,
@@ -160,7 +160,7 @@ namespace SlowlySimulate.Persistence
                         await _userManager.AddClaimAsync(applicationUser, new Claim($"Is{role}", ClaimValues.trueString));
                     }
 
-                    ApplicationUser user = await _userManager.FindByNameAsync(applicationUser.UserName);
+                    User user = await _userManager.FindByNameAsync(applicationUser.UserName);
 
                     try
                     {

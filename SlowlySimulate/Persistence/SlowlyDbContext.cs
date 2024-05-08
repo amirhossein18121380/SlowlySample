@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace SlowlySimulate.Persistence;
 
-public class SlowlyDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid, IdentityUserClaim<Guid>, ApplicationUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>, IUnitOfWork
+public class SlowlyDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClaim<Guid>, UserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>, IUnitOfWork
 {
     public DbSet<SlowlyUser> SlowlyUsers { get; set; }
     public DbSet<Topic> Topics { get; set; }

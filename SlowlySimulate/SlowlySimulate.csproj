@@ -57,6 +57,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Persistence\Migration\" />
     <Folder Include="Resources\" />
   </ItemGroup>
 

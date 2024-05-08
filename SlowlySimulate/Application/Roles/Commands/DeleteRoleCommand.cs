@@ -7,7 +7,7 @@ namespace SlowlySimulate.Application.Roles.Commands;
 
 public class DeleteRoleCommand : ICommand<bool>
 {
-    public ApplicationRole Role { get; set; }
+    public Role Role { get; set; }
 }
 
 internal class DeleteRoleCommandHandler : ICommandHandler<DeleteRoleCommand, bool>

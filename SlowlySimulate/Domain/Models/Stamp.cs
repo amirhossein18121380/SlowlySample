@@ -8,5 +8,4 @@ public class Stamp : Entity<Guid>, IAggregateRoot
     public string Country { get; set; }
     [Required, MaxLength(255)]
     public string ImageUrl { get; set; }
-    public ICollection<ApplicationUser> Owners { get; set; }
 }

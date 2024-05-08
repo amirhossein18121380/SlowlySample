@@ -20,19 +20,6 @@ public class SlowlyUser : Entity<Guid>, IAggregateRoot
     public bool ConfirmBeforeSendingTheLetter { get; set; }
     public string AppLang { get; set; } = "en";
 
-    public ICollection<Letter> SentLetters { get; set; }
-    public ICollection<Letter> ReceivedLetters { get; set; }
-    public ICollection<Interest> Interests { get; set; }
-    public ICollection<Stamp> Stamps { get; set; }
-    public ICollection<Topic> Topics { get; set; }
-    public List<UserLanguage> UserLanguages { get; set; } = new List<UserLanguage>();
-
-    public virtual ICollection<Friend> SentFriendRequests { get; set; } // represents friend requests sent by the user.
-    public virtual ICollection<Friend> ReceivedFriendRequests { get; set; } // represents friend requests received by the user.
-    public virtual ICollection<Friend> Friends { get; set; } // represents the actual friends (approved connections).
-
-    public ApplicationUser ApplicationUser { get; set; }
-
 
     public void SetRandomSlowlyId()
     {

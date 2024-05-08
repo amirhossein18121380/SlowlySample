@@ -10,17 +10,5 @@ public class FriendConfiguration : IEntityTypeConfiguration<Friend>
     {
         builder.ToTable("Friend");
         builder.Property(x => x.Id).HasDefaultValueSql("newsequentialid()");
-
-
-        builder.HasOne(f => f.RequestedTo)
-            .WithMany(u => u.SentFriendRequests)
-            .HasForeignKey(f => f.RequestedToId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        builder.HasOne(f => f.RequestedBy)
-            .WithMany(u => u.ReceivedFriendRequests)
-            .HasForeignKey(f => f.RequestedById)
-            .OnDelete(DeleteBehavior.NoAction);
-
     }
 }

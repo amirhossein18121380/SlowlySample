@@ -43,5 +43,5 @@ public interface IAccountManager
 
     Task<ApiResponse> AdminResetUserPasswordAsync(ChangePasswordViewModel changePasswordViewModel, ClaimsPrincipal authenticatedUser);
 
-    Task<ApplicationUser> RegisterNewUserAsync(string userName, string email, string password, bool requireConfirmEmail);
+    Task<User> RegisterNewUserAsync(string userName, string email, string password, bool requireConfirmEmail);
 }

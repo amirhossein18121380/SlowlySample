@@ -14,11 +14,11 @@ namespace SlowlySimulate.Api.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly Dispatcher _dispatcher;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly IDateTimeProvider _dateTimeProvider;
 
     public UsersController(Dispatcher dispatcher,
-        UserManager<ApplicationUser> userManager,
+        UserManager<User> userManager,
         ILogger<UsersController> logger,
         IDateTimeProvider dateTimeProvider)
     {

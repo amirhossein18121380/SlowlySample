@@ -27,10 +27,10 @@ namespace SlowlySimulate.Api.Manager;
 public class AccountManager : IAccountManager
 {
     private readonly IDatabaseInitializer _databaseInitializer;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
     private readonly ILogger<AccountManager> _logger;
-    private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly RoleManager<Role> _roleManager;
     private readonly IEmailFactory _emailFactory;
     private readonly IEmailManager _emailManager;
     private readonly SlowlyDbContext _dbContext;
@@ -43,10 +43,10 @@ public class AccountManager : IAccountManager
     private static readonly UserViewModel LoggedOutUser = new() { IsAuthenticated = false, Roles = new List<string>() };
 
     public AccountManager(IDatabaseInitializer databaseInitializer,
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
+        UserManager<User> userManager,
+        SignInManager<User> signInManager,
         ILogger<AccountManager> logger,
-        RoleManager<ApplicationRole> roleManager,
+        RoleManager<Role> roleManager,
         IEmailFactory emailFactory,
         IEmailManager emailManager,
         SlowlyDbContext dbContext,
@@ -156,9 +156,9 @@ public class AccountManager : IAccountManager
 
         return new ApiResponse(Status200OK, "Logout Successful");
     }
-    public async Task<ApplicationUser> RegisterNewUserAsync(string userName, string email, string password, bool requireConfirmEmail)
+    public async Task<User> RegisterNewUserAsync(string userName, string email, string password, bool requireConfirmEmail)
     {
-        var user = new ApplicationUser
+        var user = new User
         {
             UserName = userName,
             Email = email
@@ -194,7 +194,7 @@ public class AccountManager : IAccountManager
         return response.Entity;
     }
 
-    public async Task<ApplicationUser> RegisterNewUserAsync(ApplicationUser user, string password, bool requireConfirmEmail)
+    public async Task<User> RegisterNewUserAsync(User user, string password, bool requireConfirmEmail)
     {
         var result = password == null ?
             await _userManager.CreateAsync(user) :
@@ -716,7 +716,7 @@ public class AccountManager : IAccountManager
     }
     public async Task<ApiResponse> Create(RegisterViewModel parameters)
     {
-        var user = new ApplicationUser
+        var user = new User
         {
             UserName = parameters.UserName,
             Email = parameters.Email

@@ -8,7 +8,7 @@ namespace SlowlySimulate.Application.Roles.Commands;
 
 public class AddClaimCommand : ICommand<ApiResponse>
 {
-    public ApplicationRole Role { get; set; }
+    public Role Role { get; set; }
     public RoleClaim Claim { get; set; }
 }
 

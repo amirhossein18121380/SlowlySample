@@ -13,13 +13,13 @@ using SlowlySimulate.Api.Manager;
 using SlowlySimulate.Api.Middleware;
 using SlowlySimulate.Api.Models;
 using SlowlySimulate.Api.Providers;
-using SlowlySimulate.Api.Services;
 using SlowlySimulate.Application;
 using SlowlySimulate.Domain.Constants;
 using SlowlySimulate.Domain.Identity;
 using SlowlySimulate.Domain.Models;
 using SlowlySimulate.Infrastructure;
 using SlowlySimulate.Infrastructure.AuthorizationDefinitions;
+using SlowlySimulate.Infrastructure.BackgroundJobs;
 using SlowlySimulate.Infrastructure.DateTimes;
 using SlowlySimulate.Persistence;
 using SlowlySimulate.Persistence.Permissions;
@@ -44,7 +44,7 @@ services.AddSignalR();
 services.AddDateTimeProvider();
 services.AddMvc();
 services.AddControllersWithViews();
-services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, AdditionalUserClaimsPrincipalFactory>();
+services.AddScoped<IUserClaimsPrincipalFactory<User>, AdditionalUserClaimsPrincipalFactory>();
 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 services.AddScoped<IUserIdProvider, UserIdProvider>();
 services.AddScoped<ICurrentUser, CurrentWebUser>();
@@ -81,8 +81,8 @@ services.AddPersistence(configuration.GetConnectionString("DefaultConnection"))
     .AddApplicationServices(configuration)
     .AddMessageHandlers();
 
-services.AddIdentity<ApplicationUser, ApplicationRole>()
-    .AddRoles<ApplicationRole>()
+services.AddIdentity<User, Role>()
+    .AddRoles<Role>()
     .AddSignInManager()
     .AddEntityFrameworkStores<SlowlyDbContext>()
     .AddDefaultTokenProviders();
@@ -98,7 +98,7 @@ var identityServerBuilder = services.AddIdentityServer(options =>
         options.UserInteraction.ErrorUrl = "/identityserver/error";
     })
     .AddIdentityServerStores(builder.Configuration)
-    .AddAspNetIdentity<ApplicationUser>();
+    .AddAspNetIdentity<User>();
 
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -140,8 +140,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHangfireDashboard();
 
-var job = app.Services.GetRequiredService<BirthdayJobScheduler>();
-job.ScheduleBirthdayCheckJob();
+//var job = app.Services.GetRequiredService<BirthdayJobScheduler>();
+//job.ScheduleBirthdayCheckJob();
 
 
 app.UseExceptionHandler();

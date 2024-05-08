@@ -18,16 +18,16 @@ using System.Security.Claims;
 
 namespace SlowlySimulate.Api.Authorization
 {
-    public class AdditionalUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>
+    public class AdditionalUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<User, Role>
     {
         public AdditionalUserClaimsPrincipalFactory(
-            UserManager<ApplicationUser> userManager,
-            RoleManager<ApplicationRole> roleManager,
+            UserManager<User> userManager,
+            RoleManager<Role> roleManager,
             IOptions<IdentityOptions> optionsAccessor)
             : base(userManager, roleManager, optionsAccessor)
         { }
 
-        public async override Task<ClaimsPrincipal> CreateAsync(ApplicationUser user)
+        public async override Task<ClaimsPrincipal> CreateAsync(User user)
         {
             var principal = await base.CreateAsync(user);
             var identity = (ClaimsIdentity)principal.Identity;

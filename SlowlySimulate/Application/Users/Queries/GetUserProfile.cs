@@ -38,43 +38,51 @@ internal class GetUserProfileHandler : IQueryHandler<GetUserProfile, ApiResponse
 
     public async Task<ApiResponse> HandleAsync(GetUserProfile query, CancellationToken cancellationToken = default)
     {
+
+        var response = new ApiResponse(Status200OK, "Success");
+        if (_currentUser.UserId == Guid.Empty)
+        {
+            response = new ApiResponse(Status404NotFound, "User Not Found.");
+        }
+
         string cacheKey = string.Empty;
-        if (_currentUser.UserId != Guid.Empty)
-        {
-            cacheKey = $"UserProfile_{_currentUser.UserId}"; // Customize the cache key
-            var cachedUserProfile = await _easyCachingProvider.GetAsync<GetProfileDto>(cacheKey, cancellationToken);
+        cacheKey = $"UserProfile_{_currentUser.UserId}"; // Customize the cache key
+        var cachedUserProfile = await _easyCachingProvider.GetAsync<GetProfileDto>(cacheKey, cancellationToken);
 
-            if (cachedUserProfile.HasValue)
+        if (cachedUserProfile.HasValue)
+        {
+            _logger.LogInformation("UserProfile fetched from Cache successfully.");
+            response = new ApiResponse(Status200OK, "Success", cachedUserProfile.Value);
+        }
+
+        else
+        {
+            var user = await _dbContext.SlowlyUsers.SingleOrDefaultAsync(x => x.UserId == _currentUser.UserId, cancellationToken);
+            if (user == null)
             {
-                _logger.LogInformation("UserProfile fetched from Cache successfully.");
-                return new ApiResponse(Status200OK, "Success", cachedUserProfile.Value);
+                _logger.LogWarning("This User is Not Found.");
+                response = new ApiResponse(Status404NotFound, "User Not Found.");
             }
+
+            var profile = _mapper.Map<GetProfileDto>(user);
+
+            var userMatch = await _repository.GetQueryableSet().SingleOrDefaultAsync(x => x.SlowlyUserId == _currentUser.UserId, cancellationToken);
+            if (userMatch != null)
+            {
+                _logger.LogWarning("This User is Not Found.");
+                profile.AllowAddMeById = userMatch.AllowAddMeById;
+            }
+
+            if (cacheKey != string.Empty)
+            {
+                _logger.LogInformation("This User cached Successfully.");
+                await _easyCachingProvider.SetAsync(cacheKey, profile, TimeSpan.FromMinutes(10), cancellationToken); // Cache for 10 minutes
+            }
+
+            response.Result = profile;
         }
 
+        return response;
 
-        var user = await _dbContext.SlowlyUsers.SingleOrDefaultAsync(x => x.UserId == _currentUser.UserId, cancellationToken);
-        if (user == null)
-        {
-            _logger.LogWarning("This User is Not Found.");
-            return new ApiResponse(Status404NotFound, "User Not Found.");
-        }
-
-        var profile = _mapper.Map<GetProfileDto>(user);
-
-
-        var userMatch = await _repository.GetQueryableSet().SingleOrDefaultAsync(x => x.SlowlyUserId == _currentUser.UserId, cancellationToken);
-        if (userMatch != null)
-        {
-            _logger.LogWarning("This User is Not Found.");
-            profile.AllowAddMeById = userMatch.AllowAddMeById;
-        }
-
-        if (cacheKey != string.Empty)
-        {
-            _logger.LogInformation("This User cached Successfully.");
-            await _easyCachingProvider.SetAsync(cacheKey, profile, TimeSpan.FromMinutes(10), cancellationToken); // Cache for 10 minutes
-        }
-
-        return new ApiResponse(Status200OK, "Success", profile);
     }
 }

@@ -42,42 +42,24 @@ public class UserService : CrudService<SlowlyUser>, IUserService
         return user;
     }
 
-    public async Task<List<SlowlyUser>> GetFriends(Guid userId)
-    {
-        var users = await _repository.ToListAsync(
-            _repository.GetQueryableSet()
-                .Include(u => u.Friends.Where(f => f.RequestedById == userId))
-                .Include(u => u.Friends.Where(f => f.RequestedToId == userId))
-        );
-        return users;
-    }
 
-    public async Task<List<SlowlyUser>> GetFriendsStartedByMe(Guid userId)
-    {
-        var users = await _repository.ToListAsync(
-            _repository.GetQueryableSet()
-                .Include(u => u.Friends.Where(f => f.RequestedById == userId))
-        );
-        return users;
-    }
-    public async Task<List<SlowlyUser>> GetFriendsStartedByOthers(Guid userId)
-    {
-        var users = await _repository.ToListAsync(
-            _repository.GetQueryableSet()
-                .Include(u => u.Friends.Where(f => f.RequestedToId == userId))
-        );
-        return users;
-    }
+
 
     public async Task<List<SlowlyUser>> GetSideBarFriends(Guid userId)
     {
-        var users = await _repository.ToListAsync(
-            _repository.GetQueryableSet()
-                .Include(u => u.Friends.Where(f =>
-                    (f.RequestedById == userId || f.RequestedToId == userId) &&
-                    !f.IsHiddenUser && !f.IsRemovedUser && !f.IsReportedUser
-                ))
-        );
+        var users = new List<SlowlyUser>();
+        var friends = await _friendService.GetSideBarFriends(userId);
+        var user = await _repository.GetQueryableSet().SingleOrDefaultAsync(x => x.UserId == userId);
+
+        foreach (var f in friends)
+        {
+            var query = await GetByUserId(f);
+
+            if (query != null)
+            {
+                users.Add(query);
+            }
+        }
 
         return users;
     }

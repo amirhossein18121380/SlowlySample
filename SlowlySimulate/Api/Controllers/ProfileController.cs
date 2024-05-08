@@ -24,13 +24,13 @@ namespace SlowlySimulate.Api.Controllers;
 public class ProfileController : Controller
 {
     private readonly Dispatcher _dispatcher;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ICurrentUser _currentUser;
     private Guid UserId = Guid.Empty;
     private readonly IMapper _mapper;
     public ProfileController(Dispatcher dispatcher,
-        UserManager<ApplicationUser> userManager,
+        UserManager<User> userManager,
         ILogger<UsersController> logger,
         IDateTimeProvider dateTimeProvider,
         ICurrentUser currentUser,

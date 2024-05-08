@@ -89,7 +89,7 @@ namespace SlowlySimulate.Persistence.Permissions
                 case UserFeatures.Operator:
                     return GetAllPermission()
                         .Where(i => i.GroupName == "User" ||
-                                    i.GroupName == nameof(ApplicationUser))
+                                    i.GroupName == nameof(User))
                         .Select(p => p.Value).ToArray();
 
                 default:

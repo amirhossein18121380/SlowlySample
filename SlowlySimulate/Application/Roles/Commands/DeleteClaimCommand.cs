@@ -6,7 +6,7 @@ namespace SlowlySimulate.Application.Roles.Commands;
 
 public class DeleteClaimCommand : ICommand<bool>
 {
-    public ApplicationRole Role { get; set; }
+    public Role Role { get; set; }
     public RoleClaim Claim { get; set; }
 }
 
