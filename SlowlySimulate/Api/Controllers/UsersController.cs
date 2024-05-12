@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Application.Common;
+using Application.Users.Commands;
+using Application.Users.Queries;
+using CrossCuttingConcerns.DateTimes;
+using Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SlowlySimulate.Application.Common;
-using SlowlySimulate.Application.Users.Commands;
-using SlowlySimulate.Application.Users.Queries;
-using SlowlySimulate.CrossCuttingConcerns.DateTimes;
-using SlowlySimulate.Domain.Models;
 
 namespace SlowlySimulate.Api.Controllers;
 

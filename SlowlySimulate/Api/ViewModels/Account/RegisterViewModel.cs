@@ -1,4 +1,4 @@
-﻿using SlowlySimulate.Domain.Models;
+﻿using Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace SlowlySimulate.Api.ViewModels.Account

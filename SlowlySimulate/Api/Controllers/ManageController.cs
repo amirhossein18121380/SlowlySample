@@ -1,8 +1,8 @@
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SlowlySimulate.Api.ViewModels.ManageViewModels;
-using SlowlySimulate.Domain.Models;
 using SlowlySimulate.Services;
 
 namespace SlowlySimulate.Api.Controllers;

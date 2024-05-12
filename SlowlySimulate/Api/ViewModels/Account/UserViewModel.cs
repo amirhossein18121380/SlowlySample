@@ -1,4 +1,4 @@
-﻿using SlowlySimulate.Shared.Dto;
+﻿using Domain.Dto;
 
 namespace SlowlySimulate.Api.ViewModels.Account
 {

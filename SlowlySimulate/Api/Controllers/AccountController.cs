@@ -1,9 +1,9 @@
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SlowlySimulate.Api.ViewModels.AccountViewModels;
-using SlowlySimulate.Domain.Models;
 using SlowlySimulate.Services;
 using System.Security.Claims;
 

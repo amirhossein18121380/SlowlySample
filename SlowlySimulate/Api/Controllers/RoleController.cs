@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Roles.Service;
+using CrossCuttingConcerns.Models;
+using Domain.Dto.Role;
+using Domain.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SlowlySimulate.Api.ViewModels.Role;
-using SlowlySimulate.Application.Roles.Service;
-using SlowlySimulate.CrossCuttingConcerns.Models;
-using SlowlySimulate.Persistence.Permissions;
-using SlowlySimulate.Shared.Dto.Role;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace SlowlySimulate.Api.Controllers;

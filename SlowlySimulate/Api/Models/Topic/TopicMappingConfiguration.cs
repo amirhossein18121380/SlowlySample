@@ -1,4 +1,4 @@
-﻿using SlowlySimulate.CrossCuttingConcerns.Models;
+﻿using CrossCuttingConcerns.Models;
 
 namespace SlowlySimulate.Api.Models.Topic;
 public static class TopicMappingConfiguration

@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Users.Services;
+using CrossCuttingConcerns.Models;
+using Domain.Identity;
+using Domain.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using SlowlySimulate.Api.Hubs;
 using SlowlySimulate.Api.ViewModels.Account;
-using SlowlySimulate.Application.Users.Services;
-using SlowlySimulate.CrossCuttingConcerns.Models;
-using SlowlySimulate.Domain.Identity;
-using SlowlySimulate.Infrastructure;
-using SlowlySimulate.Persistence.Permissions;
+using SlowlySimulate.Manager;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace SlowlySimulate.Api.Controllers;

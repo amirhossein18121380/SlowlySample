@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Common;
+using Application.Topic.Commands;
+using Application.Topic.Queries;
+using CrossCuttingConcerns.Models;
+using Domain.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SlowlySimulate.Api.Models.Topic;
 using SlowlySimulate.Api.ViewModels.Topic;
-using SlowlySimulate.Application.Common;
-using SlowlySimulate.Application.Topic.Commands;
-using SlowlySimulate.Application.Topic.Queries;
-using SlowlySimulate.CrossCuttingConcerns.Models;
-using SlowlySimulate.Persistence.Permissions;
 
 namespace SlowlySimulate.Api.Controllers;
 

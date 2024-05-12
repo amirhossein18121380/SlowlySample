@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using SlowlySimulate.Application.Users.Services;
-using SlowlySimulate.Domain.Identity;
+﻿using Application.Users.Services;
+using Domain.Identity;
+using Microsoft.AspNetCore.SignalR;
 
 namespace SlowlySimulate.Api.Hubs;
 

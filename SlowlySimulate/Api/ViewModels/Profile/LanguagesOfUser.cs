@@ -1,4 +1,4 @@
-﻿using SlowlySimulate.Domain.Constants;
+﻿using Domain.Constants;
 
 namespace SlowlySimulate.Api.ViewModels.Profile;
 

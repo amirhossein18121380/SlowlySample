@@ -1,23 +1,23 @@
-﻿using AutoMapper;
+﻿using Application.Common;
+using Application.Topic.Queries;
+using Application.TopicOfInterest.Commands;
+using Application.TopicOfInterest.Queries;
+using Application.UserLanguage.Commands;
+using Application.UserLanguage.Queries;
+using Application.Users.Commands;
+using Application.Users.Queries;
+using AutoMapper;
+using CrossCuttingConcerns.DateTimes;
+using CrossCuttingConcerns.Models;
+using Domain.Dto.Profile;
+using Domain.Identity;
+using Domain.Models;
+using Domain.Permissions;
+using Domain.Repositories.Extension;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SlowlySimulate.Api.ViewModels.Profile;
-using SlowlySimulate.Application.Common;
-using SlowlySimulate.Application.Topic.Queries;
-using SlowlySimulate.Application.TopicOfInterest.Commands;
-using SlowlySimulate.Application.TopicOfInterest.Queries;
-using SlowlySimulate.Application.UserLanguage.Commands;
-using SlowlySimulate.Application.UserLanguage.Queries;
-using SlowlySimulate.Application.Users.Commands;
-using SlowlySimulate.Application.Users.Queries;
-using SlowlySimulate.CrossCuttingConcerns.DateTimes;
-using SlowlySimulate.CrossCuttingConcerns.Models;
-using SlowlySimulate.Domain.Identity;
-using SlowlySimulate.Domain.Models;
-using SlowlySimulate.Domain.Repositories.Extension;
-using SlowlySimulate.Persistence.Permissions;
-using SlowlySimulate.Shared.Dto.Profile;
 
 namespace SlowlySimulate.Api.Controllers;
 
@@ -259,7 +259,9 @@ public class ProfileController : Controller
     [Authorize(Permissions.Language.Read)]
     public async Task<List<LanguagesOfUser>> GetUserLanguagesQuery()
     {
-        var userLanguages = await _dispatcher.DispatchAsync(new GetUserLanguagesQuery());
+
+        var dto = await _dispatcher.DispatchAsync(new GetUserLanguagesQuery());
+        var userLanguages = _mapper.Map<List<LanguagesOfUser>>(dto);
         return userLanguages;
     }
 

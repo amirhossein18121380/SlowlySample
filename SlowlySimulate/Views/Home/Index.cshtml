@@ -1,61 +1,32 @@
-﻿@model (List<SlowlyUser> Models, int Count)
+﻿
 @{
     ViewData["Title"] = "Index";
 }
 
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-4 ">
-            <div>
-                <div class="card bg-light" style="margin-bottom: 20px;">
-                    <div class="card-header d-flex align-items-center p-2">
-                        <div>
-                            <i class="fa fa-users" aria-hidden="true"></i>
-                        </div>
-                        <div class="text-muted small d-flex justify-content-end">
-                            <span style="font-size: 20px; color: black;">Friends @Model.Count</span>
-                            <span style="font-size: 15px; color: gray; margin-left: 10px;">Hidden 0</span>
-                        </div>
-                    </div>
-                </div>
+<style>
+    #birthdayNotificationList {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+</style>
 
 
-                <div class="card sideBar overflow-auto">
-                    @if (Model.Models != null && Model.Models.Count > 0)
-                    {
-                        @foreach (var friend in Model.Models)
-                        {
-                            <div class="card-body sideBar-body border-bottom">
-                                <div class="row sideBar-main">
-                                    <div class="col-sm-8">
-                                        <div class="sideBar-name">
-                                            <span class="name-meta">
-                                                @friend.DisplayName
-                                                <br>
-                                                @friend.Country
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4 text-right sideBar-time">
-                                        <span class="time-meta">
-                                            @DateTime.Now.ToString("h:mm tt")
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="card-body">
-                            <div class="alert alert-info" role="alert">
-                                Not any friends yet.
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
+<div class="container">
+    <div class="row p-1">
+        <div class="col-6">
+            <hr />
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-6">
+            <ul id="birthdayNotificationList"></ul>
         </div>
     </div>
 </div>
+
+
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/birthdayNotifications.js"></script>

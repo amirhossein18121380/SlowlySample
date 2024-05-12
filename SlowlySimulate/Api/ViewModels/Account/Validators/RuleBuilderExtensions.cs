@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using SlowlySimulate.Domain.Constants;
+﻿using Domain.Constants;
+using FluentValidation;
 
 namespace SlowlySimulate.Api.ViewModels.Account.Validators
 {

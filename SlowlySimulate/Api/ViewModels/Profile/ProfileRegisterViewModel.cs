@@ -1,4 +1,4 @@
-﻿using SlowlySimulate.Domain.Models;
+﻿using Domain.Models;
 
 namespace SlowlySimulate.Api.ViewModels.Profile;
 public class ProfileRegisterViewModel

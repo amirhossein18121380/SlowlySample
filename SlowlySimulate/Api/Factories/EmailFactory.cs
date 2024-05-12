@@ -1,6 +1,6 @@
-﻿using Humanizer;
-using SlowlySimulate.Infrastructure;
-using SlowlySimulate.Shared.Dto.Email;
+﻿using Domain.Dto.Email;
+using Humanizer;
+using SlowlySimulate.Manager;
 
 namespace SlowlySimulate.Api.Factories
 {

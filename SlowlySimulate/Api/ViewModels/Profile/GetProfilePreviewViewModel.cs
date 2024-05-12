@@ -1,5 +1,5 @@
-﻿using SlowlySimulate.Domain.Models;
-using SlowlySimulate.Shared.Dto.Profile;
+﻿using Domain.Dto.Profile;
+using Domain.Models;
 
 namespace SlowlySimulate.Api.ViewModels.Profile;
 

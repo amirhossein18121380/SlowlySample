@@ -1,0 +1,154 @@
+﻿@model (List<SlowlyUser> Models, int Count)
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4 ">
+            <div>
+                <div class="card bg-light" style="margin-bottom: 20px;">
+                    <div class="card-header d-flex align-items-center p-2">
+                        <div>
+                            <i class="fa fa-users" aria-hidden="true"></i>
+                        </div>
+                        <div class="text-muted small d-flex justify-content-end">
+                            <span style="font-size: 20px; color: black;">Friends @Model.Count</span>
+                            <span style="font-size: 15px; color: gray; margin-left: 10px;">Hidden 0</span>
+                            <i id="showFriends" class="fa fa-plus" aria-hidden="true" style="cursor: pointer; margin-left: 10px;"></i>
+                        </div>
+                    </div>
+                    <div id="friendsList" style="display: none;">
+                        <ul id="nonFriendsList"></ul>
+                        <button id="saveFriendsButton" class="btn btn-primary btn-sm" disabled>Save</button>
+                    </div>
+                </div>
+
+                <div class="card sideBar overflow-auto">
+                    @if (Model.Models != null && Model.Models.Count > 0)
+                    {
+                        @foreach (var friend in Model.Models)
+                        {
+                            <div class="card-body sideBar-body border-bottom">
+                                <div class="row sideBar-main">
+                                    <div class="col-sm-8">
+                                        <div class="sideBar-name">
+                                            <span class="name-meta">
+                                                @friend.DisplayName
+                                                <br>
+                                                @friend.Country
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 text-right sideBar-time">
+                                        <span class="time-meta">
+                                            @DateTime.Now.ToString("h:mm tt")
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="card-body">
+                            <div class="alert alert-info" role="alert">
+                                Not any friends yet.
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const saveFriendsButton = document.getElementById('saveFriendsButton');
+    let selectedItems = [];
+    document.getElementById('showFriends').addEventListener('click', async function () {
+        const friendsList = document.getElementById('friendsList');
+        const nonFriendsList = document.getElementById('nonFriendsList');
+
+        // Toggle the display of the friend list
+        friendsList.style.display = friendsList.style.display === 'block' ? 'none' : 'block';
+
+        if (friendsList.style.display === 'block') { // If the friend list is now visible
+            // Clear existing list
+            nonFriendsList.innerHTML = '';
+
+            const nonFriends = await getNonFriends();
+            if (nonFriends.length > 0) {
+                nonFriends.forEach(user => {
+                    const listItem = document.createElement('li');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = user.userId; // Set value to user ID
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            selectedItems.push(user.userId);
+                        } else {
+                            selectedItems = selectedItems.filter(id => id !== user.userId);
+                        }
+                        saveFriendsButton.disabled = !selectedItems.length;
+                        console.log('Selected items:', selectedItems); // Log selected items for debugging
+                    });
+
+                    const label = document.createElement('label');
+                    label.textContent = user.displayName;
+                    listItem.appendChild(checkbox);
+                    listItem.appendChild(label);
+
+                    nonFriendsList.appendChild(listItem);
+                });
+            } else {
+                nonFriendsList.textContent = 'No non-friends found.';
+            }
+        }
+    });
+
+
+    saveFriendsButton.addEventListener('click', async () => {
+        // Create a copy of selectedItems at the moment of button click
+        const idsToSave = [...selectedItems];
+       
+        try {
+          
+            // Call the AddFriends action here using fetch
+            const response = await fetch('/AppHome/AddFriends', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(idsToSave), // Sending array directly
+            });
+
+            if (response.ok) {
+                const friendsList = document.getElementById('friendsList');
+        
+                // Toggle the display of the friend list
+                friendsList.style.display = friendsList.style.display === 'block' ? 'none' : 'block';
+
+                console.log('Friends added successfully!');
+                // Handle successful addition (e.g., close dropdown, update UI)
+            } else {
+                console.error('Failed to add friends.');
+                // Handle error (e.g., display error message)
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    async function getNonFriends() {
+        try {
+            const response = await fetch('/AppHome/GetNonFriends'); // Adjust URL as needed
+            if (!response.ok) {
+                throw new Error('Failed to fetch non-friends.');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error(error.message);
+            return [];
+        }
+    }
+</script>

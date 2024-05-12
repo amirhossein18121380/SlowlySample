@@ -1,9 +1,17 @@
-using Hangfire;
+using Application;
+using Domain.AuthorizationDefinitions;
+using Domain.Constants;
+using Domain.Identity;
+using Domain.Models;
+using Domain.Permissions;
 using IdentityModel;
+using Infrastructure.Caching;
+using Infrastructure.DateTimes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Persistence;
 using Serilog;
 using SlowlySimulate;
 using SlowlySimulate.Api.Authorization;
@@ -13,16 +21,7 @@ using SlowlySimulate.Api.Manager;
 using SlowlySimulate.Api.Middleware;
 using SlowlySimulate.Api.Models;
 using SlowlySimulate.Api.Providers;
-using SlowlySimulate.Application;
-using SlowlySimulate.Domain.Constants;
-using SlowlySimulate.Domain.Identity;
-using SlowlySimulate.Domain.Models;
-using SlowlySimulate.Infrastructure;
-using SlowlySimulate.Infrastructure.AuthorizationDefinitions;
-using SlowlySimulate.Infrastructure.BackgroundJobs;
-using SlowlySimulate.Infrastructure.DateTimes;
-using SlowlySimulate.Persistence;
-using SlowlySimulate.Persistence.Permissions;
+using SlowlySimulate.Manager;
 using SlowlySimulate.Services;
 
 
@@ -32,14 +31,14 @@ var configuration = builder.Configuration;
 
 
 
-services.AddHangfire(x =>
-{
-    x.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"));
-});
-services.AddHangfireServer();
-services.AddScoped<IBirthdayNotificationService, BirthdayNotificationService>();
-services.AddSingleton<BirthdayJobScheduler>();
-
+//services.AddHangfire(x =>
+//{
+//    x.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"));
+//});
+//services.AddHangfireServer();
+//services.AddScoped<IBirthdayNotificationService, BirthdayNotificationService>();
+//services.AddSingleton<BirthdayJobScheduler>();
+services.AddEasyCachingService(configuration);
 services.AddSignalR();
 services.AddDateTimeProvider();
 services.AddMvc();
@@ -138,7 +137,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHangfireDashboard();
+//app.UseHangfireDashboard();
 
 //var job = app.Services.GetRequiredService<BirthdayJobScheduler>();
 //job.ScheduleBirthdayCheckJob();
@@ -153,7 +152,7 @@ app.UseUnauthorizedRedirect();
 app.UseAuthorization();
 app.Configure();
 app.MapHub<HubSample>("/chatHub");
-app.MapHub<BirthdayHub>("/birthdayHub");
+//app.MapHub<BirthdayHub>("/birthdayHub");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

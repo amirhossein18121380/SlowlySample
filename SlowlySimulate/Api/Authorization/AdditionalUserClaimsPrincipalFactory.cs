@@ -1,8 +1,8 @@
-﻿using IdentityModel;
+﻿using Domain.AuthorizationDefinitions;
+using Domain.Models;
+using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using SlowlySimulate.Domain.Models;
-using SlowlySimulate.Infrastructure.AuthorizationDefinitions;
 using System.Security.Claims;
 
 //# Links

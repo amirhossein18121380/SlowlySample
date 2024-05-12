@@ -1,4 +1,4 @@
-﻿using SlowlySimulate.CrossCuttingConcerns.Storage;
+﻿using CrossCuttingConcerns.Storage;
 
 namespace SlowlySimulate;
 

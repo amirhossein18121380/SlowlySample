@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Domain.AuthorizationDefinitions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using SlowlySimulate.Infrastructure.AuthorizationDefinitions;
 
 namespace SlowlySimulate.Api.Authorization
 {
