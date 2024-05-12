@@ -1,0 +1,3 @@
+﻿Add-Migration [] -OutputDir "Persistence/Migrations" -Context SlowlyDbContext 
+
+update-database -Context SlowlyDbContext

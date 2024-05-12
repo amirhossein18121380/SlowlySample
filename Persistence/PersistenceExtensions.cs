@@ -15,8 +15,10 @@ public static class PersistenceExtensions
 #if DEBUG
     public static readonly ILoggerFactory factory = LoggerFactory.Create(builder => { builder.AddDebug(); });
 #endif
-    public static IServiceCollection AddPersistence(this IServiceCollection services, string connectionString, string migrationsAssembly = "")
+    public static IServiceCollection AddPersistence(this IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration, string migrationsAssembly = "")
     {
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+
         services.AddDbContext<SlowlyDbContext>(options => options.UseSqlServer(connectionString, sql =>
         {
             if (!string.IsNullOrEmpty(migrationsAssembly))
@@ -46,7 +48,7 @@ public static class PersistenceExtensions
         return services;
     }
 
-    public static IIdentityServerBuilder AddIdentityServerStores(this IIdentityServerBuilder builder, IConfiguration configuration)
+    public static IIdentityServerBuilder AddIdentityServerStores(this IIdentityServerBuilder builder, Microsoft.Extensions.Configuration.IConfiguration configuration)
     {
         return builder.AddConfigurationStore(options =>
                 {
@@ -63,7 +65,7 @@ public static class PersistenceExtensions
                 });
     }
 
-    public static void GetDbContextOptions<T>(DbContextOptionsBuilder builder, IConfiguration configuration) where T : DbContext
+    public static void GetDbContextOptions<T>(DbContextOptionsBuilder builder, Microsoft.Extensions.Configuration.IConfiguration configuration) where T : DbContext
     {
         builder.UseLoggerFactory(factory).EnableSensitiveDataLogging();
         var migrationsAssembly = typeof(T).GetTypeInfo().Assembly.GetName().Name;

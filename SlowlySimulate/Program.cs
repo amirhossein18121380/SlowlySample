@@ -76,7 +76,9 @@ services.AddAuthorizationCore();
 #endregion
 
 #region All
-services.AddPersistence(configuration.GetConnectionString("DefaultConnection"))
+
+//var connectionString = configuration.GetConnectionString("DefaultConnection");
+services.AddPersistence(configuration)
     .AddApplicationServices(configuration)
     .AddMessageHandlers();
 
