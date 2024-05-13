@@ -1,9 +1,9 @@
-﻿using Domain.AuthorizationDefinitions;
+﻿using System.Security.Claims;
+using Domain.AuthorizationDefinitions;
 using Domain.Models;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using System.Security.Claims;
 
 //# Links
 //## ASP.NET Core Roles/Policies/Claims

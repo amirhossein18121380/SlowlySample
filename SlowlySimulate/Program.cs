@@ -7,6 +7,8 @@ using Domain.Permissions;
 using IdentityModel;
 using Infrastructure.Caching;
 using Infrastructure.DateTimes;
+using Infrastructure.Web.ExceptionHandlers;
+using Infrastructure.Web.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,16 +20,20 @@ using SlowlySimulate.Api.Authorization;
 using SlowlySimulate.Api.Factories;
 using SlowlySimulate.Api.Hubs;
 using SlowlySimulate.Api.Manager;
-using SlowlySimulate.Api.Middleware;
 using SlowlySimulate.Api.Models;
 using SlowlySimulate.Api.Providers;
+using SlowlySimulate.ConfigurationOptions;
 using SlowlySimulate.Manager;
+using SlowlySimulate.Middleware;
 using SlowlySimulate.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
+
+var appSettings = new AppSettings();
+configuration.Bind(appSettings);
 
 
 
@@ -59,7 +65,7 @@ services.AddSingleton<IUserIdProvider, UserIdProvider>();
 builder.Host.InjectSerilog(configuration);
 #endregion
 
-#region GlobalException
+#region GlobalExceptionHandling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 #endregion
@@ -146,6 +152,11 @@ if (!app.Environment.IsDevelopment())
 
 
 app.UseExceptionHandler();
+app.UseDebuggingMiddleware();
+app.UseIpFiltering();
+app.UseDebuggingMiddleware();
+app.UseSecurityHeaders(appSettings.SecurityHeaders);
+
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseStaticFiles();

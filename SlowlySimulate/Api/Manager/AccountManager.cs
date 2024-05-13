@@ -13,7 +13,6 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Persistence;
-using SlowlySimulate.Api.Authorization;
 using SlowlySimulate.Api.Extension;
 using SlowlySimulate.Api.ViewModels.Account;
 using SlowlySimulate.Api.ViewModels.Profile;
@@ -21,6 +20,7 @@ using SlowlySimulate.Manager;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
+using SlowlySimulate.Api.Authorization;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 namespace SlowlySimulate.Api.Manager;
 

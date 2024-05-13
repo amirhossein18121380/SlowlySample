@@ -61,7 +61,7 @@ namespace Domain.Resources.Topic {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to این موضوع رو نداریم. بای.
+        ///   Looks up a localized string similar to این موضوع رو نداریم. .
         /// </summary>
         public static string Topic_Not_Exist {
             get {
