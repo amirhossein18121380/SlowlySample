@@ -14,7 +14,7 @@ public class AppHomeController : Controller
 {
     private readonly Dispatcher _dispatcher;
     private readonly IUserService _userService;
-    private readonly IFriendService _friendService;
+    private readonly IFriendShipService _friendService;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ICurrentUser _currentUser;
     private Guid UserId = Guid.Empty;
@@ -26,7 +26,7 @@ public class AppHomeController : Controller
         ICurrentUser currentUser,
         IMapper mapper,
         IUserService userService,
-        IFriendService friendService)
+        IFriendShipService friendService)
     {
         _dispatcher = dispatcher;
         _dateTimeProvider = dateTimeProvider;
@@ -36,7 +36,6 @@ public class AppHomeController : Controller
         UserId = _currentUser.IsAuthenticated ? _currentUser.UserId : Guid.Empty;
         _friendService = friendService;
     }
-
 
     public async Task<IActionResult> Index()
     {

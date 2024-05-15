@@ -8,10 +8,10 @@ namespace Application.Users.Services;
 
 public class UserService : CrudService<SlowlyUser>, IUserService
 {
-    private readonly IFriendService _friendService;
-    private readonly IRepository<Friend, Guid> _friendRepository;
+    private readonly IFriendShipService _friendService;
+    private readonly IRepository<FriendShip, Guid> _friendRepository;
     public UserService(IRepository<SlowlyUser, Guid> userRepository, Dispatcher dispatcher,
-        IFriendService friendService, IRepository<Friend, Guid> friendRepository)
+        IFriendShipService friendService, IRepository<FriendShip, Guid> friendRepository)
         : base(userRepository, dispatcher)
     {
         _friendService = friendService;

@@ -2,6 +2,7 @@
 
 namespace Domain.Models;
 
+//[Permissions(Actions.CRUD)]
 public partial class Role : IdentityRole<Guid>
 {
     public Role() : base() { }

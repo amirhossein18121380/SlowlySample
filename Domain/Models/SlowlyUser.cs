@@ -20,6 +20,9 @@ public class SlowlyUser : Entity<Guid>, IAggregateRoot
     public bool ConfirmBeforeSendingTheLetter { get; set; }
     public string AppLang { get; set; } = "en";
 
+    public virtual ICollection<FriendShip> FriendShips { get; set; }
+    public virtual ICollection<Letter> SentLetters { get; set; }
+    public virtual ICollection<Letter> ReceivedLetters { get; set; }
 
     public void SetRandomSlowlyId()
     {

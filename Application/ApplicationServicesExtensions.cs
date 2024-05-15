@@ -22,7 +22,7 @@ public static class ApplicationServicesExtensions
             .AddScoped<IRoleService, RoleService>()
             .AddScoped<ITopicService, TopicService>()
             .AddScoped<ISubTopicService, SubTopicService>()
-            .AddScoped<IFriendService, FriendService>()
+            .AddScoped<IFriendShipService, FriendShipService>()
             .AddScoped<ITopicOfInterestService, TopicOfInterestService>();
 
         // Add AutoMapper with all profiles in the assembly

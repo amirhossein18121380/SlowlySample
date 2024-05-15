@@ -11,5 +11,16 @@ public class LetterConfiguration : IEntityTypeConfiguration<Letter>
         builder.ToTable("Letters");
         builder.Property(x => x.Id).HasDefaultValueSql("newsequentialid()");
 
+        builder
+            .HasOne(l => l.Sender)
+            .WithMany(u => u.SentLetters)
+            .HasForeignKey(l => l.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne(l => l.Recipient)
+            .WithMany(u => u.ReceivedLetters)
+            .HasForeignKey(l => l.RecipientId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

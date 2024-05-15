@@ -12,6 +12,6 @@ public class AppSettings
 
     public CookiePolicyOptions CookiePolicyOptions { get; set; }
 
-    public Dictionary<string, string> SecurityHeaders { get; set; }
+    public Dictionary<string, string> SecurityHeaders { get; set; } = new Dictionary<string, string>();
 
 }
