@@ -1,0 +1,17 @@
+﻿syntax = "proto3";
+
+package SlowlySimulate.Protos;
+
+
+service GetTopicByIdGrpcService {
+  rpc Handle (GetTopicQueryByIdGrpcRequest) returns (GrpcApiResponse);
+}
+
+message GetTopicQueryByIdGrpcRequest {
+  string id = 1;
+}
+
+message GrpcApiResponse {
+  int32 status_code = 1;
+  string message = 2;
+}

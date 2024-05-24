@@ -17,6 +17,7 @@ using Persistence;
 using Serilog;
 using SlowlySimulate;
 using SlowlySimulate.Api.Authorization;
+using SlowlySimulate.Api.Controllers;
 using SlowlySimulate.Api.Factories;
 using SlowlySimulate.Api.Hubs;
 using SlowlySimulate.Api.Manager;
@@ -36,6 +37,10 @@ var appSettings = new AppSettings();
 configuration.Bind(appSettings);
 
 
+services.AddGrpc(options =>
+{
+    options.Interceptors.Add<GrpcExceptionInterceptor>();
+});
 
 //services.AddHangfire(x =>
 //{
@@ -150,20 +155,25 @@ if (!app.Environment.IsDevelopment())
 //var job = app.Services.GetRequiredService<BirthdayJobScheduler>();
 //job.ScheduleBirthdayCheckJob();
 
+app.UseRouting();
 
 app.UseExceptionHandler();
 app.UseDebuggingMiddleware();
 app.UseIpFiltering();
 app.UseDebuggingMiddleware();
 app.UseSecurityHeaders(appSettings.SecurityHeaders);
-
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
+
 app.UseUnauthorizedRedirect();
 app.UseAuthorization();
 app.Configure();
+app.MapGrpcService<GetTopicByIdGrpcEndpoint>();
+
+app.MapGet("/", x => x.Response.WriteAsync(""));
+
+
 app.MapHub<HubSample>("/chatHub");
 //app.MapHub<BirthdayHub>("/birthdayHub");
 app.MapControllerRoute(
