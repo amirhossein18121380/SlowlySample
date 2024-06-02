@@ -44,44 +44,83 @@ internal class GetUserProfileHandler : IQueryHandler<GetUserProfile, ApiResponse
         {
             response = new ApiResponse(Status404NotFound, "User Not Found.");
         }
-
         string cacheKey = string.Empty;
         cacheKey = $"UserProfile_{_currentUser.UserId}"; // Customize the cache key
-        var cachedUserProfile = await _easyCachingProvider.GetAsync<GetProfileDto>(cacheKey, cancellationToken);
 
-        if (cachedUserProfile.HasValue)
+        //not good solution
+        try
         {
-            _logger.LogInformation("UserProfile fetched from Cache successfully.");
-            response = new ApiResponse(Status200OK, "Success", cachedUserProfile.Value);
+            var cachedUserProfileTask = _easyCachingProvider.GetAsync<GetProfileDto>(cacheKey, cancellationToken);
+
+            if (await Task.WhenAny(cachedUserProfileTask, Task.Delay(TimeSpan.FromSeconds(1))) == cachedUserProfileTask)
+            {
+                var cachedUserProfile = await cachedUserProfileTask;
+
+                if (cachedUserProfile.HasValue)
+                {
+                    _logger.LogInformation("UserProfile fetched from Cache successfully.");
+                    response = new ApiResponse(Status200OK, "Success", cachedUserProfile.Value);
+                }
+            }
+            else
+            {
+                // Handle the case where retrieval from cache takes more than 2 seconds
+                _logger.LogWarning("UserProfile retrieval from cache timed out.");
+                // You can choose to return a default response or take other actions here
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving user profile from cache.");
         }
 
-        else
+
+
+        var user = await _slowlyUserRepository.GetQueryableSet()
+              .SingleOrDefaultAsync(x => x.UserId == _currentUser.UserId, cancellationToken);
+        if (user == null)
         {
-            var user = await _slowlyUserRepository.GetQueryableSet()
-                .SingleOrDefaultAsync(x => x.UserId == _currentUser.UserId, cancellationToken);
-            if (user == null)
-            {
-                _logger.LogWarning("This User is Not Found.");
-                response = new ApiResponse(Status404NotFound, "User Not Found.");
-            }
+            _logger.LogWarning("This User is Not Found.");
+            response = new ApiResponse(Status404NotFound, "User Not Found.");
+        }
 
-            var profile = _mapper.Map<GetProfileDto>(user);
+        var profile = _mapper.Map<GetProfileDto>(user);
 
-            var userMatch = await _repository.GetQueryableSet().SingleOrDefaultAsync(x => x.SlowlyUserId == _currentUser.UserId, cancellationToken);
-            if (userMatch != null)
-            {
-                _logger.LogWarning("This User is Not Found.");
-                profile.AllowAddMeById = userMatch.AllowAddMeById;
-            }
+        var userMatch = await _repository.GetQueryableSet().SingleOrDefaultAsync(x => x.SlowlyUserId == _currentUser.UserId, cancellationToken);
+        if (userMatch != null)
+        {
+            _logger.LogWarning("This User is Not Found.");
+            profile.AllowAddMeById = userMatch.AllowAddMeById;
+        }
 
+
+        //not good solution
+        try
+        {
             if (cacheKey != string.Empty)
             {
-                _logger.LogInformation("This User cached Successfully.");
-                await _easyCachingProvider.SetAsync(cacheKey, profile, TimeSpan.FromMinutes(10), cancellationToken); // Cache for 10 minutes
-            }
+                //await _easyCachingProvider.SetAsync(cacheKey, profile, TimeSpan.FromMinutes(10), cancellationToken);
+                var setProfile = _easyCachingProvider.SetAsync(cacheKey, profile, TimeSpan.FromMinutes(10), cancellationToken); // Cache for 10 minutes
 
-            response.Result = profile;
+                if (await Task.WhenAny(setProfile, Task.Delay(TimeSpan.FromSeconds(1))) == setProfile)
+                {
+                    await setProfile;
+                    _logger.LogInformation("This User cached Successfully.");
+                }
+                else
+                {
+                    // Handle the case where retrieval from cache takes more than 2 seconds
+                    _logger.LogWarning("UserProfile set from cache timed out.");
+                    // You can choose to return a default response or take other actions here
+                }
+            }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error setting user profile in cache.");
+        }
+
+        response.Result = profile;
 
         return response;
 

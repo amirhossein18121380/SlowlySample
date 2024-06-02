@@ -4,20 +4,25 @@ using Domain.Constants;
 using Domain.Identity;
 using Domain.Models;
 using Domain.Permissions;
+using FluentValidation;
 using IdentityModel;
 using Infrastructure.Caching;
 using Infrastructure.DateTimes;
+using Infrastructure.HealthChecks;
+using Infrastructure.Logging;
+using Infrastructure.Validation;
 using Infrastructure.Web.ExceptionHandlers;
 using Infrastructure.Web.Middleware;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Persistence;
-using Serilog;
 using SlowlySimulate;
 using SlowlySimulate.Api.Authorization;
-using SlowlySimulate.Api.Controllers;
 using SlowlySimulate.Api.Factories;
 using SlowlySimulate.Api.Hubs;
 using SlowlySimulate.Api.Manager;
@@ -35,28 +40,20 @@ var configuration = builder.Configuration;
 
 var appSettings = new AppSettings();
 configuration.Bind(appSettings);
+services.Configure<AppSettings>(configuration);
 
-
-services.AddGrpc(options =>
+if (appSettings.CheckDependency.Enabled)
 {
-    options.Interceptors.Add<GrpcExceptionInterceptor>();
-});
+    NetworkPortCheck.Wait(appSettings.CheckDependency.Host, 3);
+}
 
-//services.AddHangfire(x =>
-//{
-//    x.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"));
-//});
-//services.AddHangfireServer();
-//services.AddScoped<IBirthdayNotificationService, BirthdayNotificationService>();
-//services.AddSingleton<BirthdayJobScheduler>();
-services.AddEasyCachingService(configuration);
 services.AddSignalR();
 services.AddDateTimeProvider();
 services.AddMvc();
 services.AddControllersWithViews();
 services.AddScoped<IUserClaimsPrincipalFactory<User>, AdditionalUserClaimsPrincipalFactory>();
 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-services.AddScoped<IUserIdProvider, UserIdProvider>();
+services.AddSingleton<IUserIdProvider, UserIdProvider>();
 services.AddScoped<ICurrentUser, CurrentWebUser>();
 services.AddTransient<IEmailSender, AuthMessageSender>();
 services.AddTransient<ISmsSender, AuthMessageSender>();
@@ -64,10 +61,47 @@ services.AddScoped<EmailConfiguration>();
 services.AddTransient<IEmailFactory, EmailFactory>();
 services.AddTransient<IAccountManager, AccountManager>();
 services.AddTransient<IEmailManager, EmailManager>();
-services.AddSingleton<IUserIdProvider, UserIdProvider>();
+
+
+
+services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
+
+services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
+#region Caching
+//services.AddCaches(appSettings.Caching);
+services.AddEasyCachingService(appSettings.EasyCaching);
+#endregion
+
+#region HealthCheck
+
+var healthChecksBuilder = services.AddHealthChecks()
+    .AddSqlServer(connectionString: appSettings.ConnectionStrings.SlowlyConnection,
+        healthQuery: "SELECT 1;",
+        name: "Sql Server",
+        failureStatus: HealthStatus.Degraded);
+
+services.AddHealthChecksUI(setupSettings: setup =>
+{
+    setup.SetEvaluationTimeInSeconds(10); // set the interval for health check updates
+    setup.MaximumHistoryEntriesPerEndpoint(50); // set the maximum number of entries to keep in the UI
+    setup.AddHealthCheckEndpoint("Basic Health Check", $"{appSettings.CurrentUrl}/health");
+    setup.DisableDatabaseMigrations();
+}).AddInMemoryStorage();
+
+
+#endregion
 
 #region Logging
-builder.Host.InjectSerilog(configuration);
+builder.WebHost.UseLogger(configuration =>
+{
+    return appSettings.Logging;
+});
+
 #endregion
 
 #region GlobalExceptionHandling
@@ -88,8 +122,7 @@ services.AddAuthorizationCore();
 
 #region All
 
-//var connectionString = configuration.GetConnectionString("DefaultConnection");
-services.AddPersistence(configuration)
+services.AddPersistence(configuration, appSettings.ConnectionStrings.SlowlyConnection)
     .AddApplicationServices(configuration)
     .AddMessageHandlers();
 
@@ -98,7 +131,6 @@ services.AddIdentity<User, Role>()
     .AddSignInManager()
     .AddEntityFrameworkStores<SlowlyDbContext>()
     .AddDefaultTokenProviders();
-
 
 var identityServerBuilder = services.AddIdentityServer(options =>
     {
@@ -109,7 +141,7 @@ var identityServerBuilder = services.AddIdentityServer(options =>
         options.Events.RaiseSuccessEvents = true;
         options.UserInteraction.ErrorUrl = "/identityserver/error";
     })
-    .AddIdentityServerStores(builder.Configuration)
+    .AddIdentityServerStores(builder.Configuration, appSettings.ConnectionStrings.SlowlyConnection)
     .AddAspNetIdentity<User>();
 
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -142,40 +174,43 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 var app = builder.Build();
-// Configure the HTTP request pipeline.
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error/Index");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-//app.UseHangfireDashboard();
-
-//var job = app.Services.GetRequiredService<BirthdayJobScheduler>();
-//job.ScheduleBirthdayCheckJob();
-
 app.UseRouting();
-
 app.UseExceptionHandler();
 app.UseDebuggingMiddleware();
 app.UseIpFiltering();
 app.UseDebuggingMiddleware();
 app.UseSecurityHeaders(appSettings.SecurityHeaders);
-app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseUnauthorizedRedirect();
 app.UseAuthorization();
 app.Configure();
-app.MapGrpcService<GetTopicByIdGrpcEndpoint>();
-
-app.MapGet("/", x => x.Response.WriteAsync(""));
-
+app.UseHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = _ => true,
+    //ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+    ResponseWriter = StartupLike.WriteResponse,
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+        [HealthStatus.Degraded] = StatusCodes.Status500InternalServerError,
+        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
+    },
+});
+app.UseHealthChecksUI(options =>
+{
+    options.UIPath = "/health-ui";
+    options.ApiPath = "/health-ui-api";
+});
 
 app.MapHub<HubSample>("/chatHub");
-//app.MapHub<BirthdayHub>("/birthdayHub");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

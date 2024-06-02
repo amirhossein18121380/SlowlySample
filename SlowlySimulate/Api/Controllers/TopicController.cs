@@ -3,6 +3,7 @@ using Application.Topic.Commands;
 using Application.Topic.Queries;
 using CrossCuttingConcerns.Models;
 using Domain.Permissions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SlowlySimulate.Api.Models.Topic;
@@ -13,10 +14,12 @@ namespace SlowlySimulate.Api.Controllers;
 public class TopicController : Controller
 {
     private readonly Dispatcher _dispatcher;
+    private readonly IMediator _mediator;
 
-    public TopicController(Dispatcher dispatcher)
+    public TopicController(Dispatcher dispatcher, IMediator mediator)
     {
         _dispatcher = dispatcher;
+        _mediator = mediator;
     }
 
     [Authorize(Permissions.TopicPermission.Read)]

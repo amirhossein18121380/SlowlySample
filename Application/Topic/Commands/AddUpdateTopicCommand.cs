@@ -8,7 +8,7 @@ namespace Application.Topic.Commands;
 
 public class AddUpdateTopicCommand : ICommand<ApiResponse>
 {
-    public required String TopicName { get; set; }
+    public String TopicName { get; set; }
     public Guid TopicId { get; set; }
 }
 

@@ -2,5 +2,5 @@
 
 public class ConnectionStrings
 {
-    public string ClassifiedAds { get; set; }
+    public string SlowlyConnection { get; set; }
 }

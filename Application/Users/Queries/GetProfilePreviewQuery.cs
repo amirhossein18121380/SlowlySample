@@ -9,6 +9,7 @@ using Domain.Extension;
 using Domain.Identity;
 using Domain.Models;
 using Domain.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Users.Queries;
 public class GetProfilePreviewQuery : IQuery<ApiResponse>
@@ -24,12 +25,14 @@ internal class GetProfilePreviewQueryHandler : IQueryHandler<GetProfilePreviewQu
     private readonly IRepository<Domain.Models.UserLanguage, Guid> _userLanguageRepository;
     private readonly IMapper _mapper;
     private readonly ICache _easyCachingProvider;
+    private readonly ILogger<GetProfilePreviewQueryHandler> _logger;
     public GetProfilePreviewQueryHandler(IUserService userService,
         ITopicService topicService,
         IRepository<UserTopic, Guid> userTopicRepository,
         IRepository<Domain.Models.UserLanguage, Guid> userLanguageRepository,
         ICurrentUser currentUser,
-        IMapper mapper, ICache easyCachingProvider)
+        IMapper mapper, ICache easyCachingProvider,
+        ILogger<GetProfilePreviewQueryHandler> logger)
     {
         _userService = userService;
         _topicService = topicService;
@@ -38,14 +41,20 @@ internal class GetProfilePreviewQueryHandler : IQueryHandler<GetProfilePreviewQu
         _currentUser = currentUser;
         _mapper = mapper;
         _easyCachingProvider = easyCachingProvider;
+        _logger = logger;
     }
 
     public async Task<ApiResponse> HandleAsync(GetProfilePreviewQuery query, CancellationToken cancellationToken = default)
     {
-        string cacheKey = string.Empty;
-        if (_currentUser.UserId != Guid.Empty)
+        if (_currentUser.UserId == Guid.Empty)
         {
-            cacheKey = $"ProfilePreview_{_currentUser.UserId}";
+            return new ApiResponse(statusCode: 404, "User Not Found.");
+        }
+
+        string cacheKey = string.Empty;
+        cacheKey = $"ProfilePreview_{_currentUser.UserId}";
+        try
+        {
             var cachedUserProfile = await _easyCachingProvider.GetAsync<ProfilePreviewDto>(cacheKey, cancellationToken);
 
             if (cachedUserProfile.HasValue)
@@ -53,11 +62,13 @@ internal class GetProfilePreviewQueryHandler : IQueryHandler<GetProfilePreviewQu
                 return new ApiResponse(statusCode: 200, "Success", cachedUserProfile.Value);
             }
         }
-
-        if (_currentUser.UserId == Guid.Empty)
+        catch (Exception ex)
         {
-            return new ApiResponse(statusCode: 404, "User Not Found.");
+            _logger.LogError(ex, "Error retrieving user preview from cache.");
         }
+
+
+
         var user = await _userService.GetByUserId(_currentUser.UserId);
 
         if (user == null)
@@ -93,9 +104,18 @@ internal class GetProfilePreviewQueryHandler : IQueryHandler<GetProfilePreviewQu
         profilePreview.Topics = userTopics;
         profilePreview.Languages = languagePreview;
 
-        if (cacheKey != string.Empty)
+        //not good solution
+        try
         {
-            await _easyCachingProvider.SetAsync(cacheKey, profilePreview, TimeSpan.FromMinutes(10), cancellationToken); // Cache for 10 minutes
+            if (cacheKey != string.Empty)
+            {
+                await _easyCachingProvider.SetAsync(cacheKey, profilePreview, TimeSpan.FromMinutes(10), cancellationToken); // Cache for 10 minutes
+                _logger.LogInformation("This User cached Successfully.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error setting user preview in cache.");
         }
 
         return new ApiResponse(statusCode: 200, "Success", profilePreview);

@@ -2,7 +2,6 @@
 using Domain.Permissions;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Persistence.Repositories;
@@ -15,9 +14,9 @@ public static class PersistenceExtensions
 #if DEBUG
     public static readonly ILoggerFactory factory = LoggerFactory.Create(builder => { builder.AddDebug(); });
 #endif
-    public static IServiceCollection AddPersistence(this IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration, string migrationsAssembly = "")
+    public static IServiceCollection AddPersistence(this IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration, string? connectionString, string migrationsAssembly = "")
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        //var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         services.AddDbContext<SlowlyDbContext>(options => options.UseSqlServer(connectionString, sql =>
         {
@@ -48,15 +47,15 @@ public static class PersistenceExtensions
         return services;
     }
 
-    public static IIdentityServerBuilder AddIdentityServerStores(this IIdentityServerBuilder builder, Microsoft.Extensions.Configuration.IConfiguration configuration)
+    public static IIdentityServerBuilder AddIdentityServerStores(this IIdentityServerBuilder builder, Microsoft.Extensions.Configuration.IConfiguration configuration, string connectionString)
     {
         return builder.AddConfigurationStore(options =>
                 {
-                    options.ConfigureDbContext = x => GetDbContextOptions<SlowlyDbContext>(x, configuration);
+                    options.ConfigureDbContext = x => GetDbContextOptions<SlowlyDbContext>(x, configuration, connectionString);
                 })
                 .AddOperationalStore(options =>
                 {
-                    options.ConfigureDbContext = x => GetDbContextOptions<SlowlyDbContext>(x, configuration);
+                    options.ConfigureDbContext = x => GetDbContextOptions<SlowlyDbContext>(x, configuration, connectionString);
 
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
@@ -65,15 +64,16 @@ public static class PersistenceExtensions
                 });
     }
 
-    public static void GetDbContextOptions<T>(DbContextOptionsBuilder builder, Microsoft.Extensions.Configuration.IConfiguration configuration) where T : DbContext
+    public static void GetDbContextOptions<T>(DbContextOptionsBuilder builder, Microsoft.Extensions.Configuration.IConfiguration configuration
+    , string connectionString) where T : DbContext
     {
         builder.UseLoggerFactory(factory).EnableSensitiveDataLogging();
         var migrationsAssembly = typeof(T).GetTypeInfo().Assembly.GetName().Name;
 
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        //var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         if (string.IsNullOrEmpty(connectionString))
-            throw new ArgumentNullException("The DefaultConnection was not found.");
+            throw new ArgumentNullException("The SlowlyConnection was not found.");
 
         if (!connectionString.ToLower().Contains("multipleactiveresultsets=true"))
             throw new ArgumentException("When Sql Server is in use the DefaultConnection must contain: MultipleActiveResultSets=true");

@@ -29,10 +29,10 @@ public static class ApplicationServicesExtensions
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         //services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-
-
         return services;
     }
+
+
     public static IApplicationBuilder ApplicationConfigure(this IApplicationBuilder app)
     {
         return app;

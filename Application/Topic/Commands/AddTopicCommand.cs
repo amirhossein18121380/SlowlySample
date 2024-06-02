@@ -1,17 +1,15 @@
-﻿using Application.Common.Commands;
-using Application.Topic.Services;
+﻿using Application.Topic.Services;
 using CrossCuttingConcerns.Models;
-using System.ComponentModel.DataAnnotations;
+using MediatR;
 
 namespace Application.Topic.Commands;
 
-public class AddTopicCommand : ICommand<ApiResponse>
+public class AddTopicCommand : IRequest<ApiResponse>//: ICommand<ApiResponse>
 {
-    [Required]
     public string TopicName { get; set; }
 }
 
-internal class AddTopicCommandHandler : ICommandHandler<AddTopicCommand, ApiResponse>
+internal class AddTopicCommandHandler : IRequestHandler<AddTopicCommand, ApiResponse>
 {
     private readonly ITopicService _topicService;
 
@@ -20,13 +18,23 @@ internal class AddTopicCommandHandler : ICommandHandler<AddTopicCommand, ApiResp
         _topicService = topicService;
     }
 
-    public async Task<ApiResponse> HandleAsync(AddTopicCommand command, CancellationToken cancellationToken = default)
+    public async Task<ApiResponse> Handle(AddTopicCommand request, CancellationToken cancellationToken)
     {
         var topic = new Domain.Models.Topic()
         {
-            Name = command.TopicName
+            Name = request.TopicName
         };
         await _topicService.AddAsync(topic, cancellationToken);
         return new ApiResponse(statusCode: 200);
     }
+
+    //public async Task<ApiResponse> HandleAsync(AddTopicCommand command, CancellationToken cancellationToken = default)
+    //{
+    //    var topic = new Domain.Models.Topic()
+    //    {
+    //        Name = command.TopicName
+    //    };
+    //    await _topicService.AddAsync(topic, cancellationToken);
+    //    return new ApiResponse(statusCode: 200);
+    //}
 }
